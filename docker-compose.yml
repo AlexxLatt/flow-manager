@@ -1,0 +1,54 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flow-manager-app
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://flow-manager-postgres:5432/flow_manager
+      SPRING_DATASOURCE_USERNAME: app
+      SPRING_DATASOURCE_PASSWORD: local_dev_password
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: local_minio_password
+      MINIO_BUCKET: files
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    ports:
+      - "8082:8080"
+    networks:
+      - file-conversion-service_default
+      - flow-manager-internal
+    depends_on:
+      - flow-manager-postgres
+    restart: unless-stopped
+
+  flow-manager-postgres:
+    image: postgres:16-alpine
+    container_name: flow-manager-postgres
+    environment:
+      POSTGRES_DB: flow_manager
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: local_dev_password
+    ports:
+      - "5434:5432"
+    volumes:
+      - flow_manager_data:/var/lib/postgresql/data
+    networks:
+      - flow-manager-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d flow_manager"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  flow_manager_data:
+
+networks:
+  flow-manager-internal:
+  file-conversion-service_default:
+    external: true
+    name: file-conversion-service_default
