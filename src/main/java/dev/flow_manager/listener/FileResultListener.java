@@ -23,17 +23,10 @@ public class FileResultListener {
             groupId = "flow-manager-group"
     )
 
-    public void handleFileConversionRequestEvent(String message) throws Exception {
-
-        FileConversionResultEvent result =
-                objectMapper.readValue(
-                        message,
-                        FileConversionResultEvent.class
-                );
+    public void handleFileConversionResultEvent(
+            FileConversionResultEvent result) throws Exception {
 
         dataBaseFileService.saveResult(result);
-
-
     }
 
 }

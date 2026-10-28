@@ -1,7 +1,9 @@
 package dev.flow_manager.service;
 
 
-import dev.flow_manager.entity.Files;
+import dev.flow_manager.dto.ResponseIdDto;
+import dev.flow_manager.dto.ResponseStatusDto;
+import dev.flow_manager.entity.File;
 import dev.flow_manager.exception.NotFoundException;
 import dev.flow_manager.repository.FilesRepository;
 
@@ -26,7 +28,7 @@ public class FileServices {
 
 
     @Transactional
-    public UUID toConvert(MultipartFile file) throws Exception {
+    public ResponseIdDto convertFile(MultipartFile file) throws Exception {
 
         String originalName = file.getOriginalFilename();
 
@@ -36,30 +38,30 @@ public class FileServices {
                 file.getSize()
         );
 
-        return saveFileService.saveResponse(originalName);
+        return new ResponseIdDto(saveFileService.saveResponse(originalName));
 
 
     }
 
-    public String getStatus(UUID id) {
+    public ResponseStatusDto getStatus(UUID id) {
 
-        Files files = filesRepository.findById(id).orElseThrow(() -> new NotFoundException("Такого id не существует"));
+        File file = filesRepository.findById(id).orElseThrow(() -> new NotFoundException("Такого id не существует"));
 
-        return files.getStatus().toString();
+        return new ResponseStatusDto(file.getStatus().toString());
     }
 
 
     public Resource getFile(UUID id) throws Exception {
-        Files files = filesRepository.findById(id)
+        File file = filesRepository.findById(id)
                 .orElseThrow(() ->
                         new NotFoundException("Такого id не существует"));
 
-        if (files.getConvertedObjectKey() == null) {
+        if (file.getConvertedObjectKey() == null) {
             throw new NotFoundException("Сконвертированный файл ещё не готов");
         }
 
         InputStream inputStream =
-                minioService.downloadFile(files.getConvertedObjectKey());
+                minioService.downloadFile(file.getConvertedObjectKey());
 
         return new InputStreamResource(inputStream);
     }

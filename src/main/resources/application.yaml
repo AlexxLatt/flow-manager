@@ -25,7 +25,10 @@ spring:
       enable-auto-commit: false
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.value.default.type: dev.flow_manager.event.FileConversionResultEvent
+        spring.json.trusted.packages: dev.flow_manager.event
 
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer

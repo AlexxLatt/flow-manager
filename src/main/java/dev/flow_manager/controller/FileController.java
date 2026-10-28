@@ -1,6 +1,8 @@
 package dev.flow_manager.controller;
 
 
+import dev.flow_manager.dto.ResponseIdDto;
+import dev.flow_manager.dto.ResponseStatusDto;
 import dev.flow_manager.service.FileServices;
 import org.springframework.core.io.Resource;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +24,8 @@ public class FileController {
 
 
     @PostMapping(consumes = "multipart/form-data")
-    public UUID uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
-        return fileServices.toConvert(file);
+    public ResponseIdDto uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
+        return fileServices.convertFile(file);
     }
 
 
@@ -41,7 +43,7 @@ public class FileController {
     }
 
     @GetMapping("/status/{id}")
-    public String getStatus(@PathVariable UUID id) {
+    public ResponseStatusDto getStatus(@PathVariable UUID id) {
         return fileServices.getStatus(id);
 
     }
