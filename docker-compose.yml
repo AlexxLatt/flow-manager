@@ -20,6 +20,7 @@ services:
     networks:
       - file-conversion-service_default
       - flow-manager-internal
+      - microservices-network
     depends_on:
       - flow-manager-postgres
     restart: unless-stopped
@@ -49,6 +50,11 @@ volumes:
 
 networks:
   flow-manager-internal:
+
   file-conversion-service_default:
     external: true
     name: file-conversion-service_default
+
+  microservices-network:
+    external: true
+    name: microservices-network

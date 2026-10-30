@@ -14,7 +14,6 @@ import tools.jackson.databind.ObjectMapper;
 @RequiredArgsConstructor
 public class FileResultListener {
     private static final String TOPIC_NAME = "file-conversion-result";
-    private final ObjectMapper objectMapper;
     private final SaveFileService dataBaseFileService;
 
 
