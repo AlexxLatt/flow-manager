@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-files
+      author: aleksandr
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE files (
+                  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                  original_filename VARCHAR(255) NOT NULL,
+                  source_object_key VARCHAR(500) NOT NULL,
+                  converted_object_key VARCHAR(500),
+                  status VARCHAR(20) NOT NULL DEFAULT 'PROCESSING',
+                  error_message TEXT,
+                  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                  updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+              );
+
+              CREATE INDEX idx_files_status
+                  ON files(status);
+
+              CREATE INDEX idx_files_created_at
+                  ON files(created_at);
