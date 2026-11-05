@@ -66,7 +66,7 @@ app:
       group-id: flow-manager-subscription-cache
       enable-auto-commit: false
   file:
-    max-size: 100mb
+    max-free-size: 100mb
 
 eureka:
   instance:
