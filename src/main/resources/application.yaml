@@ -1,4 +1,9 @@
 spring:
+
+  cache:
+    redis:
+      time-to-live: 5m
+
   application:
     name: flow-manager-service
   servlet:
@@ -53,6 +58,13 @@ app:
     access-key: ${MINIO_ACCESS_KEY:minioadmin}
     secret-key: ${MINIO_SECRET_KEY:local_minio_password}
     bucket: ${MINIO_BUCKET:files}
+
+  kafka:
+    consumer:
+      bootstrap-servers: file-conversion-kafka:9092
+      auto-offset-reset: earliest
+      group-id: flow-manager-subscription-cache
+      enable-auto-commit: false
 
 eureka:
   instance:

@@ -2,7 +2,7 @@ package dev.flow_manager.listener;
 
 
 
-import dev.flow_manager.service.SubscriptionListenerService;
+import dev.flow_manager.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.kafka.annotation.KafkaListener;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ExpiredSubscriptionListener {
     private static final String TOPIC_NAME = "expired-subscriptions";
-    private final SubscriptionListenerService subscriptionListenerService;
+    private final SubscriptionService subscriptionService;
 
     @KafkaListener(
             topics = TOPIC_NAME,
@@ -22,7 +22,6 @@ public class ExpiredSubscriptionListener {
             containerFactory = "subscriptionCacheKafkaListenerContainerFactory"
     )
     public void consume(String userName) {
-        subscriptionListenerService.updateStatus(userName);
-
+        subscriptionService.expireSubscription(userName);
     }
 }
