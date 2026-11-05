@@ -15,6 +15,8 @@ services:
       MINIO_SECRET_KEY: local_minio_password
       MINIO_BUCKET: files
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     ports:
       - "8082:8080"
     networks:
@@ -23,6 +25,7 @@ services:
       - microservices-network
     depends_on:
       - flow-manager-postgres
+      - redis
     restart: unless-stopped
 
   flow-manager-postgres:
@@ -45,8 +48,26 @@ services:
       retries: 10
     restart: unless-stopped
 
+  redis:
+    image: redis:7-alpine
+    container_name: flow-manager-redis
+    ports:
+      - "6380:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - flow_manager_redis_data:/data
+    networks:
+      - flow-manager-internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
 volumes:
   flow_manager_data:
+  flow_manager_redis_data:
 
 networks:
   flow-manager-internal:

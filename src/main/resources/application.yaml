@@ -1,12 +1,22 @@
 spring:
   application:
     name: flow-manager-service
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 1100MB
 
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/flow_manager}
     username: ${SPRING_DATASOURCE_USERNAME:app}
     password: ${SPRING_DATASOURCE_PASSWORD:local_dev_password}
     driver-class-name: org.postgresql.Driver
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2s
 
   jpa:
     hibernate:
@@ -45,8 +55,24 @@ app:
     bucket: ${MINIO_BUCKET:files}
 
 eureka:
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:flow-manager-app}
+    prefer-ip-address: false
+    instance-id: ${spring.application.name}:${eureka.instance.hostname}:${server.port}
+
   client:
     service-url:
-      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://eureka-server:8761/eureka/}
     register-with-eureka: true
     fetch-registry: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      subscriptionService:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        register-health-indicator: true

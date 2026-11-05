@@ -23,9 +23,12 @@ public class FileController {
     private final FileServices fileServices;
 
 
-    @PostMapping(consumes = "multipart/form-data")
-    public ResponseIdDto uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
-        return fileServices.convertFile(file);
+    @PostMapping(
+            path = {"", "/"},
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseIdDto uploadFile(@RequestParam("file") MultipartFile file, @RequestHeader("X-User-Login") String userName) throws Exception {
+        return fileServices.convertFile(file,userName);
     }
 
 
