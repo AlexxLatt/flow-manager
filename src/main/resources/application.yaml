@@ -65,6 +65,8 @@ app:
       auto-offset-reset: earliest
       group-id: flow-manager-subscription-cache
       enable-auto-commit: false
+  file:
+    max-size: 100mb
 
 eureka:
   instance:

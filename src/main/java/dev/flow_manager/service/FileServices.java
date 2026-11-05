@@ -11,9 +11,11 @@ import dev.flow_manager.repository.FilesRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -25,7 +27,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class FileServices {
-    static final Long UN_SAB_FILE_SIZE = 1048576L;
+    @Value("${app.file.max-free-size}")
+    private DataSize maxFreeFileSize;
     private final MinioService minioService;
     private final SaveFileService saveFileService;
     private final FilesRepository filesRepository;
@@ -38,7 +41,7 @@ public class FileServices {
 
         log.info("subStatus: {}", subStatus );
         log.info("Размер файла:"+ file.getSize());
-        if (!subStatus && file.getSize() > UN_SAB_FILE_SIZE) {
+        if (!subStatus && file.getSize() > maxFreeFileSize.toBytes()) {
             throw new SubscriptionRequiredException("Активируйте подписку, файл слишком большой.");
         }
         log.info("Прошел проверку веса");
